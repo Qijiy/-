@@ -1,0 +1,34 @@
+1.在SwitchA上配置DHCP中继。
+# 配置接口加入VLAN。
+<HUAWEI> system-view
+[HUAWEI] sysname SwitchA
+[SwitchA] vlan batch 100 200
+[SwitchA] interface gigabitethernet 0/0/2
+[SwitchA-GigabitEthernet0/0/2] port link-type hybrid
+[SwitchA-GigabitEthernet0/0/2] port hybrid pvid vlan 100
+[SwitchA-GigabitEthernet0/0/2] port hybrid untagged vlan 100
+[SwitchA-GigabitEthernet0/0/2] quit
+[SwitchA] interface gigabitethernet 0/0/1
+[SwitchA-GigabitEthernet0/0/1] port link-type hybrid
+[SwitchA-GigabitEthernet0/0/1] port hybrid pvid vlan 200
+[SwitchA-GigabitEthernet0/0/1] port hybrid untagged vlan 200
+[SwitchA-GigabitEthernet0/0/1] quit
+[SwitchA] interface vlanif 200 
+[SwitchA-Vlanif200] ip address 10.10.20.1 24
+[SwitchA-Vlanif200] quit
+# 在接口下使能DHCP中继功能。
+[SwitchA] dhcp enable
+[SwitchA] interface vlanif 100
+[SwitchA-Vlanif100] ip address 10.20.20.1 24
+[SwitchA-Vlanif100] dhcp select relay 
+[SwitchA-Vlanif100] dhcp relay server-ip 10.10.20.2
+[SwitchA-Vlanif100] quit
+2.在SwitchA上配置缺省路由。
+[SwitchA] ip route-static 0.0.0.0 0.0.0.0 10.10.20.2
+10.10
+3.在SwitchB上配置基于全局地址池的DHCP服务器功能。
+# 使能DHCP服务。
+
+<HUAWEI> system-view
+[HUAWEI] sysname SwitchB
+[SwitchB] dhcp enable
